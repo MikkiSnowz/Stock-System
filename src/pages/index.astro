@@ -1,11 +1,66 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { env } from "cloudflare:workers";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+interface ProductRow {
+  id: number;
+  name: string;
+  quantity: number | null;
+}
+
+const db = env.stock_db;
+const { results } = await db.prepare(`
+  SELECT p.id, p.name, SUM(sl.quantity) as quantity
+  FROM products p
+  LEFT JOIN stock_levels sl ON sl.product_id = p.id
+  GROUP BY p.id, p.name
+`).all();
+const products = results as unknown as ProductRow[];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stock System</title>
+  </head>
+  <body>
+    <h1>Product Inventory</h1>
+
+    {products.length === 0 ? (
+      <p>No products yet.</p>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr>
+              <td>{product.id}</td>
+              <td>{product.name}</td>
+              <td>{product.quantity ?? 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+
+     <h2>Add Product</h2>
+    <form method="POST" action="/api/products">
+      <label>
+        Name:
+        <input type="text" name="name" required />
+      </label>
+      <br />
+      <label>
+        SKU (optional):
+        <input type="text" name="sku" />
+      </label>
+      <br />
+      <button type="submit">Add Product</button>
+    </form>
+  </body>
+</html>

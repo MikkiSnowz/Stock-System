@@ -1,0 +1,24 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-09-03",
+	"compatibility_flags": [
+		"global_fetch_strictly_public"
+	],
+	"name": "stock-system",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "stock_db",
+			"database_name": "stock-db",
+			"database_id": "31af12c0-2dd7-42e7-8444-7917f6eb8633",
+			"remote": true
+		}
+	]
+}
