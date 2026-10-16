@@ -47,3 +47,16 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 # Stock-System
 Stock system using astro and D1 database from cloudfare
+
+## Authentication setup
+
+Login and account registration use the `users` and `sessions` tables in the
+configured Cloudflare D1 database. Apply both migrations before deploying:
+
+```sh
+npx wrangler d1 migrations apply stock-db --remote
+```
+
+Users can create an account at `/register`. Passwords are stored as PBKDF2
+hashes, and browser sessions use random, HttpOnly cookies whose hashes are
+stored in D1.
