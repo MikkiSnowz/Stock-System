@@ -3,6 +3,7 @@ import { env } from "cloudflare:workers";
 import { getSessionUserId, SESSION_COOKIE } from "./lib/auth";
 
 const PUBLIC_PATHS = new Set(["/login", "/register"]);
+const PROTECTED_PATHS = new Set(["/", "/api/products", "/profile", "/api/profile"]);
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
@@ -10,12 +11,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  if (pathname !== "/" && pathname !== "/api/products") {
+  if (!PROTECTED_PATHS.has(pathname)) {
     return next();
   }
 
   const userId = await getSessionUserId(env.stock_db, context.cookies.get(SESSION_COOKIE)?.value);
   if (userId !== null) {
+    context.locals.userId = userId;
     return next();
   }
 

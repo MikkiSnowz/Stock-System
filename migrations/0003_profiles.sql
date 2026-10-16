@@ -1,0 +1,10 @@
+CREATE TABLE user_profiles (
+  user_id INTEGER PRIMARY KEY,
+  full_name TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '',
+  job_title TEXT NOT NULL DEFAULT '',
+  department TEXT NOT NULL DEFAULT '',
+  bio TEXT NOT NULL DEFAULT '',
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
